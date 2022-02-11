@@ -10,7 +10,7 @@ useEffect(()=>{
 },[])
 return (
   
-  <div className="">
+  <div className="bg-gray-50 h-screen overflow-y-scroll scrollbar-hide">
     <Head>
     <title> Insta App</title>
   </Head>

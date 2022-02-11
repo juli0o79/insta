@@ -10,5 +10,7 @@ module.exports = {
     'tailwindcss',
     'postcss-preset-env',
     require('@tailwindcss/forms'),
+    require('tailwind-scrollbar'),
+    require('tailwind-scrollbar-hide')
   ],
 }
