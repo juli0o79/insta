@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import * as faker from '@faker-js/faker';
 import Story from './Story';
+import { useSession } from 'next-auth/react';
 
 function Stories() {
   const [suggestions, setSuggestions] = useState([{id:1, avatar:'', username:''}])
@@ -28,6 +29,7 @@ const arrayNumber = [1,2,3,4]
 console.log('valores', ...arrayNumber)
 
   const someValues= [...Array(3)]
+  const {data:session} = useSession();
 
 
     
@@ -35,6 +37,9 @@ console.log('valores', ...arrayNumber)
     <div className='flex space-x-2 p-6 bg-white
     mt-8 border-gray-200 border rounded-sm overflow-x-scroll scrollbar-thin scrollbar-thumb-black'>
       {/* {[...Array(5)].map((_, i) =>(console.log('fui chamado' + i + 'vezes')))} */}
+      {session && (
+        <Story img={session.user.image} username={session.user.username}/>
+      )}
       {suggestions.map(profile=>(
         <Story key={profile.id} img={profile.avatar} username={profile.username}/>
       ))}

@@ -2,6 +2,7 @@ import Head from "next/head"
 import { useEffect } from "react"
 import Feed from "../components/Feed"
 import Header from "../components/Header"
+import Modal from "../components/Modal"
 
 
 const IndexPage = () =>{
@@ -17,8 +18,10 @@ return (
     {/* Header */}
     <Header/>
     {/* Feed */}
-    {/* Modal */}
     <Feed/>
+    {/* Modal */}
+    <Modal/>
+    
   </div>
   
 )}

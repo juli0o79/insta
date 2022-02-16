@@ -10,17 +10,21 @@ import {
 } from '@heroicons/react/outline'
 import { HomeIcon } from '@heroicons/react/solid'
 import { signIn, signOut, useSession } from 'next-auth/react'
+import { useRouter } from 'next/router'
+import { useRecoilState } from 'recoil'
+import {modalState} from '../atoms/modalAtom'
 
 function Header() {
   //destructuring data and renaming it as session
   //You can get status from useSession to create some loading response
-  const { data: session, status } = useSession();
+  const { data: session} = useSession();
+  const [openModal, setOpenModal] = useRecoilState(modalState)
+  // read only version const openModal = useRecoilValue(modalState)
+  const router = useRouter();
   return (
     <div className='shadow-sm border-b bg-white sticky top-0'>
       <div className='flex justify-between max-w-6xl mx-5 xl:mx-auto'>
-        {console.log('session', session)}
-        {console.log('status', status)}
-        <div className='relative h-24 w-24 hidden lg:inline-grid cursor-pointer'>
+        <div onClick={()=> router.push('/')} className='relative h-24 w-24 hidden lg:inline-grid cursor-pointer'>
           <Image src='https://links.papareact.com/ocw'
             layout='fill'
             objectFit='contain' />
@@ -50,7 +54,7 @@ function Header() {
 
         {/* Right */}
         <div className='flex items-center justify-end space-x-4'>
-          <HomeIcon className='navBtn' />
+          <HomeIcon onClick={()=> router.push('/')} className='navBtn' />
           <MenuIcon className='h-6 md:hidden cursor-pointer' />
           {
             session ? (
@@ -64,7 +68,7 @@ function Header() {
                   -top-1 -right-2 text-sm w-5 h-5'>3</div>
                 </div>
 
-                <PlusCircleIcon className='navBtn' />
+                <PlusCircleIcon onClick={()=> setOpenModal(true)} className='navBtn' />
                 <UserGroupIcon className='navBtn' />
                 <HeartIcon className='navBtn' />
                 <img onClick={() => signOut()}
