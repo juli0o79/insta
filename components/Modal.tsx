@@ -4,7 +4,10 @@ import { useRecoilState } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from "@headlessui/react"
 import { CameraIcon } from '@heroicons/react/outline'
-
+import {db, storage} from '../firebase'
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { useSession } from 'next-auth/react'
+import { ref, getDownloadURL, uploadString } from 'firebase/storage'
 
 function Modal() {
   const [openModal, setOpenModal] = useRecoilState(modalState)
@@ -12,6 +15,53 @@ function Modal() {
   const filePickerRef = useRef(null);
   const captionRef= useRef(null);
   const [selectedFile, setselectedfile] = useState(null);
+  const [loading, setLoading] = useState(false)
+  const {data: session} = useSession();
+
+  const uploadPost = async()=>{
+    if(loading) return;
+
+    setLoading(true)
+    // create a post doc and add to the firestore 'posts' collection
+    // get post id for the newly created post
+    // upload image to the firebase storage with the post id
+    // get a download URL from FB storage and update the original post with image
+    // read this https://stackoverflow.com/questions/61784913/what-is-the-difference-between-firebase-storage-and-cloud-firestore-realtime-dat#:~:text=Since%20a%20Firestore%20document%20is,than%20just%20basic%20storage%20capabilities.
+
+    //add doc lets us add a new document to a collection
+    // we use collection helper function to get the collection. It receives the Firestore instance and the collection name
+    const docRef = await addDoc(collection(db, 'posts'),{
+      // The second argument of addDoc is the data to be added to the new document
+      // the logged user wich will be uploading the information
+      username: session.user.username,
+      caption: captionRef.current.value,
+      profileImg : session.user.image,
+      //We can use ServerTimeStamp to get the updated time based on time-zone
+      timestamp: serverTimestamp()
+    })
+
+    console.log('new doc added with id', docRef.id);
+    //Here we upload the image to the firebase storage
+
+    //create a ref inside firebase storage for the current image
+    const imageRef = ref(storage, `posts/${docRef.id}/image`);
+
+    // UploadString uploads the image to the Storage imageRef reference
+    await uploadString(imageRef, selectedFile, "data_url") // it Returns a promise with the upload result
+    .then(async snapshot => {
+      // we can than get the url for the uploaded file and update the doc creates in firestore collection with the uploaded image
+      const downloadURL = await getDownloadURL(imageRef);
+      // we use The updateDoc helper function wich receives the doc function to get the doc and the content to update it
+      await updateDoc(doc(db, 'posts', docRef.id), {
+        image: downloadURL
+      })
+    });
+
+    setOpenModal(false);
+    setLoading(false);
+    setselectedfile(null);
+
+  }
 
   const addImageToPost = (e) => {
     const reader = new FileReader();
@@ -87,13 +137,17 @@ function Modal() {
                       <input
                         className='border-none focus:ring-0 w-full text-center'
                         type='text'
-                        placeholder='Placeholder and a little more' />
-                        ref={captionRef}
+                        placeholder='Placeholder and a little more'
+                        ref={captionRef} />
+                        
                     </div>
                   </div>
                 </div>
                 <div className='mt-5 sm:mt-6'>
                   <button
+                  onClick={()=> uploadPost()}
+                  disabled={!selectedFile}
+
                     type="button"
                     className='inline-flex justify-center w-full rounded-md border border-transparent shadow-sm
                     px-4 py-2 bg-red-600 text-base font-session text-white hover:bg-red-700 focus:outline-none
@@ -101,7 +155,7 @@ function Modal() {
                     disabled:cursor-not-allowed hover:disabled:bg-gray-300
                     '
                   >
-                    Upload Post
+                   {loading ?' Uploading': 'Upload Post'} 
                   </button>
                 </div>
 
