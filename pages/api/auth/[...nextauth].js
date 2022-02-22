@@ -10,6 +10,7 @@ export default NextAuth({
     }),
     // ...add more providers here
   ],
+  secret=process.env.NEXTAUTH_SECRET,
   //This is how you would normally set the basic auth page for your aplication
   /* theme: {
     logo: 'https://links.papareact.com/sq0',
