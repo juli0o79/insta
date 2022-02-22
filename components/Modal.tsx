@@ -4,7 +4,7 @@ import { useRecoilState } from 'recoil'
 import { modalState } from '../atoms/modalAtom'
 import { Dialog, Transition } from "@headlessui/react"
 import { CameraIcon } from '@heroicons/react/outline'
-import {db, storage} from '../firebase'
+import { db, storage } from '../firebase'
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { useSession } from 'next-auth/react'
 import { ref, getDownloadURL, uploadString } from 'firebase/storage'
@@ -13,13 +13,13 @@ function Modal() {
   const [openModal, setOpenModal] = useRecoilState(modalState)
   //We Are using ref to interact with the hidden input
   const filePickerRef = useRef(null);
-  const captionRef= useRef(null);
+  const captionRef = useRef(null);
   const [selectedFile, setselectedfile] = useState(null);
   const [loading, setLoading] = useState(false)
-  const {data: session} = useSession();
+  const { data: session } = useSession();
 
-  const uploadPost = async()=>{
-    if(loading) return;
+  const uploadPost = async () => {
+    if (loading) return;
 
     setLoading(true)
     // create a post doc and add to the firestore 'posts' collection
@@ -30,12 +30,12 @@ function Modal() {
 
     //add doc lets us add a new document to a collection
     // we use collection helper function to get the collection. It receives the Firestore instance and the collection name
-    const docRef = await addDoc(collection(db, 'posts'),{
+    const docRef = await addDoc(collection(db, 'posts'), {
       // The second argument of addDoc is the data to be added to the new document
       // the logged user wich will be uploading the information
       username: session.user.username,
       caption: captionRef.current.value,
-      profileImg : session.user.image,
+      profileImg: session.user.image,
       //We can use ServerTimeStamp to get the updated time based on time-zone
       timestamp: serverTimestamp()
     })
@@ -48,14 +48,14 @@ function Modal() {
 
     // UploadString uploads the image to the Storage imageRef reference
     await uploadString(imageRef, selectedFile, "data_url") // it Returns a promise with the upload result
-    .then(async snapshot => {
-      // we can than get the url for the uploaded file and update the doc creates in firestore collection with the uploaded image
-      const downloadURL = await getDownloadURL(imageRef);
-      // we use The updateDoc helper function wich receives the doc function to get the doc and the content to update it
-      await updateDoc(doc(db, 'posts', docRef.id), {
-        image: downloadURL
-      })
-    });
+      .then(async snapshot => {
+        // we can than get the url for the uploaded file and update the doc creates in firestore collection with the uploaded image
+        const downloadURL = await getDownloadURL(imageRef);
+        // we use The updateDoc helper function wich receives the doc function to get the doc and the content to update it
+        await updateDoc(doc(db, 'posts', docRef.id), {
+          image: downloadURL
+        })
+      });
 
     setOpenModal(false);
     setLoading(false);
@@ -109,7 +109,7 @@ function Modal() {
                 transition-all sm:my-8 sm:align-middle sm:max-w-sm sm:w-full sm:p-6'>
               <div>
                 <div>
-                  {selectedFile ? (<img src={selectedFile} onClick={()=> setselectedfile(null)} alt="uploaded Image" />) : (
+                  {selectedFile ? (<img src={selectedFile} onClick={() => setselectedfile(null)} alt="uploaded Image" />) : (
                     <div
                       onClick={() => filePickerRef.current.click() /* using the div to trigger a click event on the input */}
                       className='mx-auto flex items-center justify-center h-12 w-12
@@ -139,14 +139,14 @@ function Modal() {
                         type='text'
                         placeholder='Placeholder and a little more'
                         ref={captionRef} />
-                        
+
                     </div>
                   </div>
                 </div>
                 <div className='mt-5 sm:mt-6'>
                   <button
-                  onClick={()=> uploadPost()}
-                  disabled={!selectedFile}
+                    onClick={() => uploadPost()}
+                    disabled={!selectedFile}
 
                     type="button"
                     className='inline-flex justify-center w-full rounded-md border border-transparent shadow-sm
@@ -155,7 +155,7 @@ function Modal() {
                     disabled:cursor-not-allowed hover:disabled:bg-gray-300
                     '
                   >
-                   {loading ?' Uploading': 'Upload Post'} 
+                    {loading ? ' Uploading' : 'Upload Post'}
                   </button>
                 </div>
 
