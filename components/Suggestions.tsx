@@ -23,20 +23,6 @@ function Suggestions() {
       }));
       setState(arrayTest)
     },[])
-   /*  const [suggestions, setSuggestions] = useState([{id:1, avatar:'', username:''}])
-  useEffect(()=>{
-    // How to use fake Array [...Array(20)]
-    // How to run a function multiple times
-    const suggestions = [...Array(20)].map((_, i)=>({
-      //o parênteses contornando o objeto é para que as chaves do objeto
-      //não sejam confundidas com a abertura e fechamento de uma função
-      ...faker.faker.helpers.contextualCard(),
-      id: i
-    })
-    ) 
-    //console.log('suggestion', suggestion)
-    setSuggestions(suggestions)
-  },[]) */
 
   return(
     <div className='mt-4 ml-10 text[100px] mb-5'>

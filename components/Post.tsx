@@ -35,17 +35,17 @@ function Post({ username, userimg, img, caption, id }: postPropsType) {
         return () => unsubscribe()
     }, [db, id])
 
-    useEffect(()=>{
+    useEffect(() => {
         const unsubscribe = onSnapshot(collection(db, 'posts', id, 'likes'),
-        (snapshot)=>{
-            setLikes(snapshot.docs)
-        })
+            (snapshot) => {
+                setLikes(snapshot.docs)
+            })
         return () => unsubscribe();
-    },[db, id])
+    }, [db, id])
 
-    useEffect(()=>{
-        setHasLiked(likes.findIndex((like) => (like.id === session?.user?.uid)) !== -1 )
-    },[likes])
+    useEffect(() => {
+        setHasLiked(likes.findIndex((like) => (like.id === session?.user?.uid)) !== -1)
+    }, [likes])
     const sendComment = async (e) => {
         // Prevent page refresh
         e.preventDefault();
@@ -60,13 +60,13 @@ function Post({ username, userimg, img, caption, id }: postPropsType) {
         })
     }
 
-    const likePost = async()=>{
-        if(hasLiked) {
+    const likePost = async () => {
+        if (hasLiked) {
             await deleteDoc(doc(db, 'posts', id, 'likes', session?.user?.uid.toString()))
         } else // we need wlese, otherwise the function will run both
-        await setDoc(doc(db, 'posts', id, 'likes', session?.user?.uid.toString()),{
-            username: session.user.username
-        })
+            await setDoc(doc(db, 'posts', id, 'likes', session?.user?.uid.toString()), {
+                username: session.user.username
+            })
     }
     return (
         <div className='bg-white my-7 border rounded-sm'>
@@ -87,10 +87,10 @@ function Post({ username, userimg, img, caption, id }: postPropsType) {
                 <div className='flex justify-between px-4 pt-4 pb-2'>
                     <div className='flex space-x-4'>
                         {
-                            hasLiked ?  <HeartIconFilled className='btn text-red-500' onClick= {()=> likePost()}/> :
-                            <HeartIcon onClick= {()=> likePost()} className='btn' />
+                            hasLiked ? <HeartIconFilled className='btn text-red-500' onClick={() => likePost()} /> :
+                                <HeartIcon onClick={() => likePost()} className='btn' />
                         }
-                        
+
                         <ChatIcon className='btn' />
                         <PaperAirplaneIcon className='btn' />
                     </div>
